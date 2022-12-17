@@ -14,7 +14,7 @@ vector<int> prea3VecBuf[6];
 
 float posAc = 1000;
 
-void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int pltOffset);
+void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int PDGID);
 
 void linked_tracks::Loop()
 {
@@ -81,6 +81,8 @@ void linked_tracks::Loop()
    }
    */
 
+   //nentries = 100000;
+
    for (Long64_t jentry=0; jentry<nentries;jentry++) 
    {  
       int jentryint=jentry;
@@ -102,11 +104,11 @@ void linked_tracks::Loop()
 
          if (posAc == 0 || (segX <= posAc && segX >= -posAc && segY <= posAc && segY >= -posAc))
          {
-            if (vecSize == 0)
+            if (dirIndex == 0)
             {
-               if(s_ePID[0] == 0 && pdgID == 2212)
+               if(s_ePID[0] == 0)
                {
-                  initVect(trid, plateID, segID, segX, segY, segZ, pltBegin);
+                  initVect(trid, plateID, segID, segX, segY, segZ, pdgID);
                }               
             }
             else
@@ -154,9 +156,9 @@ void linked_tracks::Loop()
                            int yDif = prea3VecTemp[4][k] - segY;
                            int dif = 0;
 
-                           if (segID == prea3VecTemp[2][k] /*xDif <= dif && xDif >= -dif && yDif <= dif && yDif >= -dif*/)
+                           if (segID == prea3VecTemp[2][k] && plateID < 5 /* && xDif <= dif && xDif >= -dif && yDif <= dif && yDif >= -dif*/)
                            {
-                              //initVect(trid, plateID, segID, segX, segY, segZ, pltBegin);
+                              //cout << "TrkID: 1: " << prea3VecTemp[0][k] << ", 2: " << trid << endl;
                               
                               preb3Vec[0].push_back(trid);
                               preb3Vec[1].push_back(plateID);
@@ -178,7 +180,7 @@ void linked_tracks::Loop()
                   }
                }
 
-               if (plateID > 5 && plateID <= 9)
+               if (plateID > 9 && plateID < 15)
                {
                   prea3VecBuf[0].push_back(trid);
                   prea3VecBuf[1].push_back(plateID);
@@ -198,43 +200,21 @@ void linked_tracks::Loop()
       }
    }
    
-   if (dirIndex != 0)
+   if (/*dirIndex != 0*/ true)
    {
-      int ind = -1;
-
       /*
       for (int x = 0; x < preb3Vec[0].size(); x++)
       {
          cout << "TrID: " << prea3VecTemp[0][x] << ", PltID: " << prea3VecTemp[1][x] << ", SegID: " << prea3VecTemp[2][x] << ", SegX: " << prea3VecTemp[3][x] << ", SegY: " << prea3VecTemp[4][x] << ", SegZ: " << prea3VecTemp[5][x] << endl;
       }
       */
-
+      
       for (int i = 0; i < prea3VecBuf[0].size(); i++)
       {
-         /*
-         int cnt = count(preb3Vec[0].begin(), preb3Vec[0].end(), prea3VecBuf[0][i]);
-
-         for (int j = 0; j < cnt; j++)
-         {
-            auto it = find(preb3Vec[0].begin() + ind + 1, preb3Vec[0].end(), prea3VecBuf[0][i]);
-            if (it != preb3Vec[0].end())
-            {
-               ind = it - preb3Vec[0].begin();
-               if (prea3VecBuf[0][i] == preb3Vec[0][ind])
-               {
-                  for (int k = 0; k < arrSize; k++)
-                  {
-                     prea3Vec[k].push_back(prea3VecBuf[k][i]);
-                  }
-               }
-            }
-         }
-         */
-
-         auto it = find(preb3Vec[0].begin() + ind + 1, preb3Vec[0].end(), prea3VecBuf[0][i]);
+         auto it = find(preb3Vec[0].begin(), preb3Vec[0].end(), prea3VecBuf[0][i]);
          if (it != preb3Vec[0].end())
          {
-            ind = it - preb3Vec[0].begin();
+            int ind = it - preb3Vec[0].begin();
             if (prea3VecBuf[0][i] == preb3Vec[0][ind])
             {
                for (int k = 0; k < arrSize; k++)
@@ -277,12 +257,12 @@ void linked_tracks::Loop()
    
    cout << "Total Size: " << PCnt << ", Non-Proton Size: " << nonPCnt << endl;
    cout << "No Cut - Total Size: " << totalPCnt << ", Non-Proton Size: " << totalNonPCnt << endl;
-   cout << "Average Distance Squre: " << (float)dist2Sum/PCnt << endl;
+   cout << "Average Distance Square: " << (float)dist2Sum/PCnt << endl;
 }
 
-void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int pltOffset)
+void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int PDGID)
 {
-   if(PltID <= 4)
+   if(PltID < 5 && PDGID == 2212)
    {
       //protonsbfW.push_back(trid);
 
@@ -295,8 +275,8 @@ void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int 
 
       //cout << trid << endl;
    }
-
-   if(PltID > 5 && PltID <= 9)
+   /*
+   if(PltID > 5 && PltID < 15)
    {
       //protonsafW.push_back(trid);
 
@@ -306,6 +286,21 @@ void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int 
       prea3Vec[3].push_back(SegX);
       prea3Vec[4].push_back(SegY);
       prea3Vec[5].push_back(SegZ);
+
+      //cout << trid << endl;
+   }
+   */
+
+   if(PltID > 9 && PltID < 15)
+   {
+      //protonsafW.push_back(trid);
+
+      prea3VecBuf[0].push_back(TrID);
+      prea3VecBuf[1].push_back(PltID);
+      prea3VecBuf[2].push_back(SegID);
+      prea3VecBuf[3].push_back(SegX);
+      prea3VecBuf[4].push_back(SegY);
+      prea3VecBuf[5].push_back(SegZ);
 
       //cout << trid << endl;
    }
