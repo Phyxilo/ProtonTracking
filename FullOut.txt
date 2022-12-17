@@ -1,0 +1,49 @@
+0/834286
+Before Vector Size: 5
+100000/834286
+Before Vector Size: 457025
+200000/834286
+Before Vector Size: 939202
+300000/834286
+Before Vector Size: 1203551
+400000/834286
+Before Vector Size: 1237449
+500000/834286
+Before Vector Size: 1279836
+600000/834286
+Before Vector Size: 1311797
+700000/834286
+Before Vector Size: 1425775
+800000/834286
+Before Vector Size: 1614989
+Total Size: 0, Non-Proton Size: 0
+No Cut - Total Size: 128235, Non-Proton Size: 49288
+Average Distance Squre: nan
+After Vector: 335416, Before Vector: 342060
+pl011_040/linked_tracks.root
+0/1061713
+Before Vector Size: 5
+100000/1061713
+Before Vector Size: 32841
+200000/1061713
+Before Vector Size: 43705
+300000/1061713
+Before Vector Size: 56738
+400000/1061713
+Before Vector Size: 58691
+500000/1061713
+Before Vector Size: 58855
+600000/1061713
+Before Vector Size: 59016
+700000/1061713
+Before Vector Size: 59668
+800000/1061713
+Before Vector Size: 60083
+900000/1061713
+Before Vector Size: 60994
+1000000/1061713
+Before Vector Size: 65164
+Total Size: 66530, Non-Proton Size: 0
+No Cut - Total Size: 2751442, Non-Proton Size: 884434
+Average Distance Squre: 0
+After Vector: 0, Before Vector: 13923
