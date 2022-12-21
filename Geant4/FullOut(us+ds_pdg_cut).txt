@@ -1,0 +1,55 @@
+pl001_030/linked_tracks.root
+Total Size: 0, Non-Proton Size: 0
+No Cut - Total Size: 0, Non-Proton Size: 0
+Average Distance Square: nan
+Segment Vector Size -- Before Tungsten: 19783, After Tungsten: 19008
+Track Vector Size -- Before Tungsten: 4227, After Tungsten: 3990
+
+pl011_040/linked_tracks.root
+Total Size: 18909, Non-Proton Size: 0
+No Cut - Total Size: 24935, Non-Proton Size: 4914
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 18909, After Tungsten: 18941
+Track Vector Size -- Before Tungsten: 3986, After Tungsten: 3975
+
+pl021_050/linked_tracks.root
+Total Size: 18836, Non-Proton Size: 366
+No Cut - Total Size: 30765, Non-Proton Size: 10459
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 18836, After Tungsten: 18692
+Track Vector Size -- Before Tungsten: 3969, After Tungsten: 3947
+
+pl031_060/linked_tracks.root
+Total Size: 18586, Non-Proton Size: 739
+No Cut - Total Size: 37301, Non-Proton Size: 16787
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 18586, After Tungsten: 18378
+Track Vector Size -- Before Tungsten: 3942, After Tungsten: 3903
+
+pl041_070/linked_tracks.root
+Total Size: 18266, Non-Proton Size: 984
+No Cut - Total Size: 42730, Non-Proton Size: 22328
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 18266, After Tungsten: 18218
+Track Vector Size -- Before Tungsten: 3915, After Tungsten: 3897
+
+pl051_080/linked_tracks.root
+Total Size: 18081, Non-Proton Size: 1310
+No Cut - Total Size: 50313, Non-Proton Size: 29524
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 18081, After Tungsten: 17944
+Track Vector Size -- Before Tungsten: 3899, After Tungsten: 3853
+
+pl061_090/linked_tracks.root
+Total Size: 17801, Non-Proton Size: 1555
+No Cut - Total Size: 57595, Non-Proton Size: 36743
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 17801, After Tungsten: 17552
+Track Vector Size -- Before Tungsten: 3858, After Tungsten: 3804
+
+pl071_100/linked_tracks.root
+Total Size: 17376, Non-Proton Size: 1802
+No Cut - Total Size: 66329, Non-Proton Size: 45383
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 17376, After Tungsten: 17232
+Track Vector Size -- Before Tungsten: 3803, After Tungsten: 3742
