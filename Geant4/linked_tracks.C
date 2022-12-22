@@ -87,7 +87,8 @@ void linked_tracks::Loop()
 
    if (dirIndex == 0)
    {
-      TH1F *slopeX = new TH1F("TX","Slope X",1,-1,100);
+      TCanvas *Canvas= new TCanvas("Canvas","Histogram Canvas",20,20,1920,1080);
+      TH1F *slopeX = new TH1F("TX","Slope X",400,-0.4,0.4);
       for (Long64_t jentry=0; jentry<nentries;jentry++) 
       {  
          int jentryint=jentry;
@@ -98,7 +99,7 @@ void linked_tracks::Loop()
          for(int i = 0; i < nseg; i++)
          {
             int plateID = s_ePID[i];
-            int segTX = s_eTX[i];
+            float segTX = s_eTX[i];
 
             if (plateID < 5)
             {
@@ -107,8 +108,11 @@ void linked_tracks::Loop()
          }
       }
 
-      sigma = 2*slopeX->GetStdDev();
+      sigma = 3*slopeX->GetStdDev();
       cout << "Slope X Sigma: " << sigma << endl;
+
+      slopeX->Draw("HIST");
+      Canvas->Print( "Slope.pdf", "pdf");
    }
 
    for (Long64_t jentry=0; jentry<nentries;jentry++) 

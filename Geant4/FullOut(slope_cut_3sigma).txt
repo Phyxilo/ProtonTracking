@@ -1,57 +1,57 @@
-Slope X Sigma: 0.116088
+Slope X Sigma: 0.0887978
 
 pl001_030/linked_tracks.root
 Total Size: 0, Non-Proton Size: 0
 No Cut - Total Size: 0, Non-Proton Size: 0
 Average Distance Square: nan
-Segment Vector Size -- Before Tungsten: 19655, After Tungsten: 19662
-Track Vector Size -- Before Tungsten: 4167, After Tungsten: 4120
+Segment Vector Size -- Before Tungsten: 19620, After Tungsten: 19625
+Track Vector Size -- Before Tungsten: 4153, After Tungsten: 4112
 
 pl011_040/linked_tracks.root
-Total Size: 19562, Non-Proton Size: 688
-No Cut - Total Size: 22364, Non-Proton Size: 3056
+Total Size: 19525, Non-Proton Size: 653
+No Cut - Total Size: 21960, Non-Proton Size: 2688
 Average Distance Square: 0
-Segment Vector Size -- Before Tungsten: 19562, After Tungsten: 19488
-Track Vector Size -- Before Tungsten: 4117, After Tungsten: 4088
+Segment Vector Size -- Before Tungsten: 19525, After Tungsten: 19479
+Track Vector Size -- Before Tungsten: 4109, After Tungsten: 4086
 
 pl021_050/linked_tracks.root
-Total Size: 19378, Non-Proton Size: 932
-No Cut - Total Size: 25732, Non-Proton Size: 6517
+Total Size: 19369, Non-Proton Size: 923
+No Cut - Total Size: 24959, Non-Proton Size: 5808
 Average Distance Square: 0
-Segment Vector Size -- Before Tungsten: 19378, After Tungsten: 19149
-Track Vector Size -- Before Tungsten: 4083, After Tungsten: 4042
-pl031_060/linked_tracks.root
+Segment Vector Size -- Before Tungsten: 19369, After Tungsten: 19147
+Track Vector Size -- Before Tungsten: 4081, After Tungsten: 4041
 
-Total Size: 19040, Non-Proton Size: 1218
-No Cut - Total Size: 29634, Non-Proton Size: 10692
+pl031_060/linked_tracks.root
+Total Size: 19038, Non-Proton Size: 1216
+No Cut - Total Size: 28382, Non-Proton Size: 9527
 Average Distance Square: 0
-Segment Vector Size -- Before Tungsten: 19040, After Tungsten: 18772
-Track Vector Size -- Before Tungsten: 4037, After Tungsten: 3984
+Segment Vector Size -- Before Tungsten: 19038, After Tungsten: 18767
+Track Vector Size -- Before Tungsten: 4036, After Tungsten: 3983
 
 pl041_070/linked_tracks.root
-Total Size: 18661, Non-Proton Size: 1397
-No Cut - Total Size: 33241, Non-Proton Size: 14467
+Total Size: 18656, Non-Proton Size: 1392
+No Cut - Total Size: 31695, Non-Proton Size: 12994
 Average Distance Square: 0
-Segment Vector Size -- Before Tungsten: 18661, After Tungsten: 18534
-Track Vector Size -- Before Tungsten: 3997, After Tungsten: 3958
+Segment Vector Size -- Before Tungsten: 18656, After Tungsten: 18526
+Track Vector Size -- Before Tungsten: 3996, After Tungsten: 3954
 
 pl051_080/linked_tracks.root
-Total Size: 18392, Non-Proton Size: 1660
-No Cut - Total Size: 37846, Non-Proton Size: 19133
+Total Size: 18384, Non-Proton Size: 1652
+No Cut - Total Size: 35747, Non-Proton Size: 17122
 Average Distance Square: 0
-Segment Vector Size -- Before Tungsten: 18392, After Tungsten: 18222
-Track Vector Size -- Before Tungsten: 3959, After Tungsten: 3909
+Segment Vector Size -- Before Tungsten: 18384, After Tungsten: 18216
+Track Vector Size -- Before Tungsten: 3955, After Tungsten: 3907
 
 pl061_090/linked_tracks.root
-Total Size: 18080, Non-Proton Size: 1864
-No Cut - Total Size: 42554, Non-Proton Size: 24001
+Total Size: 18074, Non-Proton Size: 1858
+No Cut - Total Size: 39635, Non-Proton Size: 21241
 Average Distance Square: 0
-Segment Vector Size -- Before Tungsten: 18080, After Tungsten: 17786
-Track Vector Size -- Before Tungsten: 3914, After Tungsten: 3849
+Segment Vector Size -- Before Tungsten: 18074, After Tungsten: 17780
+Track Vector Size -- Before Tungsten: 3912, After Tungsten: 3847
 
 pl071_100/linked_tracks.root
-Total Size: 17612, Non-Proton Size: 2048
-No Cut - Total Size: 48104, Non-Proton Size: 29701
+Total Size: 17606, Non-Proton Size: 2042
+No Cut - Total Size: 44402, Non-Proton Size: 26182
 Average Distance Square: 0
-Segment Vector Size -- Before Tungsten: 17612, After Tungsten: 17431
-Track Vector Size -- Before Tungsten: 3849, After Tungsten: 3782
+Segment Vector Size -- Before Tungsten: 17606, After Tungsten: 17429
+Track Vector Size -- Before Tungsten: 3847, After Tungsten: 3781

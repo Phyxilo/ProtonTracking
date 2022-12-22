@@ -2,7 +2,8 @@
     "files.associations": {
         "linked_tracks.C": "cpp",
         "ProtonTracking.C": "cpp",
-        "FitComp.C": "cpp"
+        "FitComp.C": "cpp",
+        "DataMCComp2.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
