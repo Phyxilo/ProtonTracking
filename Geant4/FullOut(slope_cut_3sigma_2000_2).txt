@@ -1,0 +1,49 @@
+Slope X Sigma: 0.0887978
+
+pl001_030/linked_tracks.root
+Total Size: 0, Non-Proton Size: 0
+Average Distance Square: nan
+Segment Vector Size -- Before Tungsten: 30353, After Tungsten: 30231
+Track Vector Size -- Before Tungsten: 15793, After Tungsten: 15668
+
+pl011_040/linked_tracks.root
+Total Size: 29949, Non-Proton Size: 535
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 29949, After Tungsten: 29660
+Track Vector Size -- Before Tungsten: 15568, After Tungsten: 15459
+
+pl021_050/linked_tracks.root
+Total Size: 29391, Non-Proton Size: 988
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 29391, After Tungsten: 29221
+Track Vector Size -- Before Tungsten: 15365, After Tungsten: 15250
+
+pl031_060/linked_tracks.root
+Total Size: 28963, Non-Proton Size: 1410
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 28963, After Tungsten: 28699
+Track Vector Size -- Before Tungsten: 15154, After Tungsten: 15029
+
+pl041_070/linked_tracks.root
+Total Size: 28440, Non-Proton Size: 1783
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 28440, After Tungsten: 28088
+Track Vector Size -- Before Tungsten: 14939, After Tungsten: 14794
+
+pl051_080/linked_tracks.root
+Total Size: 27765, Non-Proton Size: 2195
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 27765, After Tungsten: 27499
+Track Vector Size -- Before Tungsten: 14678, After Tungsten: 14546
+
+pl061_090/linked_tracks.root
+Total Size: 27173, Non-Proton Size: 2543
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 27173, After Tungsten: 26662
+Track Vector Size -- Before Tungsten: 14405, After Tungsten: 14190
+
+pl071_100/linked_tracks.root
+Total Size: 26292, Non-Proton Size: 2847
+Average Distance Square: 0
+Segment Vector Size -- Before Tungsten: 26292, After Tungsten: 25698
+Track Vector Size -- Before Tungsten: 14032, After Tungsten: 13771

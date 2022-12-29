@@ -4,20 +4,18 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
-//extern vector<int> pot1st;
-//extern vector<int> protonsbfW;
-//extern vector<int> protonsafW;
-
-extern vector<int> sub1Vec[6];
-extern vector<int> sub2Vec[6];
+extern vector<int> subaVec[6];
+extern vector<int> subbVec[6];
 
 vector<int> prea3Vec[6];
 vector<int> preb3Vec[6];
+vector<int> prea3VecTemp[6];
+vector<int> prea3VecBuf[6];
 
-int PCnt = 0, nonPCnt = 0;
-int totalPCnt = 0, totalNonPCnt = 0;
+float posAc = 1000;
+float sigma = 0;
 
-void initVect(int TrID, int SegID, int PdgID, int PltID, int SegX, int SegY, int SegZ);
+void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int PDGID);
 
 void linked_tracks::Loop()
 {
@@ -46,38 +44,76 @@ void linked_tracks::Loop()
 //by  b_branchname->GetEntry(ientry); //read only this branch
 
    if (fChain == 0) return;
-   //FILE *f = fopen("plate10.txt", "w");
 
    Long64_t nentries = fChain->GetEntriesFast();
    Long64_t nbytes = 0, nb = 0;
 
-   vector<int>::iterator itbf;
-   vector<int>::iterator itaf;
-
    vector<int> linkCnt;
 
-   nentries = 100000;
+   int PCnt = 0, nonPCnt = 0;
+   int totalPCnt = 0, totalNonPCnt = 0;
 
-   //prea3Vec[0].clear(); prea3Vec[1].clear(); prea3Vec[2].clear();
-   //preb3Vec[0].clear(); preb3Vec[1].clear(); preb3Vec[2].clear();
+   int arrSize = sizeof(prea3Vec)/sizeof(prea3Vec[0]);
+   
+   for (int i = 0; i < arrSize; i++)
+   {
+      prea3VecTemp[i].assign(prea3Vec[i].begin(), prea3Vec[i].end());
 
-   int vecSize = prea3Vec[0].size();
+      prea3Vec[i].clear();
+      preb3Vec[i].clear();
+   }
+   //cout << prea3VecTemp[0].size() << endl;
+
+   int vecSize = prea3VecTemp[0].size();
    int pltBegin = dirIndex*10;
    int pltSize = 5;
 
    int dist2Sum = 0;
 
    //cout << prea3Vec[0].size() << ", " << prea3Vec[1].size() << endl;
+   
    /*
    for (int j = 0; j < pltSize; j++)
    {
       int currentPlt = pltBegin + j;
 
-      linkCnt.push_back(count(prea3Vec[1].begin(), prea3Vec[1].end(), currentPlt));
+      linkCnt.push_back(count(prea3VecTemp[1].begin(), prea3VecTemp[1].end(), currentPlt));
 
       //cout << count(prea3Vec[1].begin(), prea3Vec[1].end(), currentPlt) << endl;
    }
    */
+
+   //nentries = 100000;
+
+   if (dirIndex == 0)
+   {
+      TCanvas *Canvas= new TCanvas("Canvas","Histogram Canvas",20,20,1920,1080);
+      TH1F *slopeX = new TH1F("TX","Slope X",400,-0.4,0.4);
+      for (Long64_t jentry=0; jentry<nentries;jentry++) 
+      {  
+         int jentryint=jentry;
+         Long64_t ientry = LoadTree(jentry);
+         if (ientry < 0) break;
+         nb = fChain->GetEntry(jentry);   nbytes += nb;
+
+         for(int i = 0; i < nseg; i++)
+         {
+            int plateID = s_ePID[i];
+            float segTX = s_eTX[i];
+
+            if (plateID < 5)
+            {
+               slopeX->Fill(segTX);
+            }
+         }
+      }
+
+      sigma = 3*slopeX->GetStdDev();
+      cout << "Slope X Sigma: " << sigma << endl;
+
+      slopeX->Draw("HIST");
+      Canvas->Print( "Slope.pdf", "pdf");
+   }
 
    for (Long64_t jentry=0; jentry<nentries;jentry++) 
    {  
@@ -94,117 +130,215 @@ void linked_tracks::Loop()
          int plateID = s_ePID[i];
          int segID = s_eID[i];
 
-         int segX = s_eX[i];
-         int segY = s_eY[i];
-         int segZ = s_eZ[i];
-   
-         if (vecSize == 0 && s_ePID[0] == 0)
+         float segX = s_eX[i];
+         float segY = s_eY[i];
+         float segZ = s_eZ[i];
+
+         float segTX = s_eTX[i];
+         float segTY = s_eTY[i];
+
+         if ((posAc == 0 || (segX <= posAc && segX >= -posAc && segY <= posAc && segY >= -posAc)) && (segTX < sigma && segTX > -sigma && segTY < sigma && segTY > -sigma))
          {
-            initVect(trid, segID, pdgID, plateID, segX, segY, segZ);
-         }
-         else
-         {  
-            
-            for (int j = 0; j < pltSize; j++)
+            if (dirIndex == 0)
             {
-               int currentPlt = pltBegin + j;
-               //cout << segCnt << endl;
-               
-               /*
-               int segCnt = linkCnt[j];
-               for (int k = 0; k < segCnt; k++)
+               initVect(trid, plateID, segID, segX, segY, segZ, pdgID);
+            }
+            else
+            {
+               for (int j = 0; j < pltSize; j++)
                {
-                  auto it = find(prea3Vec[1].begin() + index + 1, prea3Vec[1].end(), currentPlt);
-                  if (it != prea3Vec[1].end())
+                  int currentPlt = j;
+                  //cout << segCnt << endl;
+                  /*
+                  int segCnt = linkCnt[j];
+                  for (int k = 0; k < segCnt; k++)
                   {
-                     index = it - prea3Vec[1].begin();
-                     if (segID == prea3Vec[2][index]){cout << "PltID: " << plateID << ", SegID: " << segID << endl;}
-                  }
-               }
-               */
-
-               if (plateID == currentPlt)
-               {
-                  totalPCnt++;
-
-                  if (pdgID != 2212) {totalNonPCnt++;}
-
-                  for (int k = 0; k < vecSize; k++)
-                  {
-                     if (prea3Vec[1][k]-pltBegin == currentPlt)
+                     auto it = find(prea3VecTemp[1].begin() + index + 1, prea3VecTemp[1].end(), currentPlt);
+                     if (it != prea3VecTemp[1].end())
                      {
-                        //cout << "SegZ: 1: " << prea3Vec[5][k] << ", 2: " << segZ << endl;
-
-                        int xDif = prea3Vec[3][k] - segX;
-                        int yDif = prea3Vec[4][k] - segY;
-                        int dif = 0;
-
-                        if (segID == prea3Vec[2][k] /*xDif <= dif && xDif >= -dif && yDif <= dif && yDif >= -dif*/)
+                        index = it - prea3VecTemp[1].begin();
+                        if (segID == prea3VecTemp[2][index])
                         {
+                           //cout << "PltID: " << plateID << ", SegID: " << segID << endl;
                            //cout << "PltID: " << plateID << ", SegID: " << segID << ", PDGID: " << pdgID <<  endl;
-                           //cout << "SegX: 1: " << segX << ", 2: " << prea3Vec[3][k] << ", SegY: 1: " << segY << ", 2: " << prea3Vec[4][k] << ", SegZ: 1: " << segZ << ", 2: " << prea3Vec[5][k] << endl;
-                           
-                           dist2Sum += xDif*xDif + yDif*yDif;
+                           //cout << "SegX: 1: " << segX << ", 2: " << prea3VecTemp[3][index] << ", SegY: 1: " << segY << ", 2: " << prea3VecTemp[4][index] << ", SegZ: 1: " << segZ << ", 2: " << prea3VecTemp[5][index] << endl;
                            
                            PCnt++;
-
                            if (pdgID != 2212){nonPCnt++;}
                         }
+
+                        totalPCnt++;
+                        if (pdgID != 2212) {totalNonPCnt++;}
                      }
                   }
+                  */
+                  
+                  if (plateID == currentPlt)
+                  {
+                     totalPCnt++;
+                     if (pdgID != 2212) {totalNonPCnt++;}
+
+                     /*
+                     int segCnt = linkCnt[j];
+                     for (int k = 0; k < segCnt; k++)
+                     {
+                        auto it = find(prea3VecTemp[1].begin() + index + 1, prea3VecTemp[1].end(), currentPlt+10);
+                        if (it != prea3VecTemp[1].end())
+                        {
+                           index = it - prea3VecTemp[1].begin();
+                           if (segID == prea3VecTemp[2][index])
+                           {
+                              //cout << "PltID: " << plateID << ", SegID: " << segID << endl;
+                              //cout << "PltID: " << plateID << ", SegID: " << segID << ", PDGID: " << pdgID <<  endl;
+                              //cout << "SegX: 1: " << segX << ", 2: " << prea3VecTemp[3][index] << ", SegY: 1: " << segY << ", 2: " << prea3VecTemp[4][index] << ", SegZ: 1: " << segZ << ", 2: " << prea3VecTemp[5][index] << endl;
+                              
+                              preb3Vec[0].push_back(trid);
+                              preb3Vec[1].push_back(plateID);
+                              preb3Vec[2].push_back(segID);
+                              preb3Vec[3].push_back(segX);
+                              preb3Vec[4].push_back(segY);
+                              preb3Vec[5].push_back(segZ);
+
+                              int xDif = prea3VecTemp[3][index] - segX;
+                              int yDif = prea3VecTemp[4][index] - segY;
+
+                              dist2Sum += xDif*xDif + yDif*yDif;
+                              
+                              PCnt++;
+                              if (pdgID != 2212){nonPCnt++;}
+                              
+                           }
+
+                           totalPCnt++;
+                           if (pdgID != 2212) {totalNonPCnt++;}
+                        }
+                     }
+                     */
+                     
+                     
+                     for (int k = 0; k < vecSize; k++)
+                     {
+                        if (prea3VecTemp[1][k]-10 == currentPlt)
+                        {
+                           //cout << "SegZ: 1: " << prea3VecTemp[5][k] << ", 2: " << segZ << endl;
+
+                           int xDif = prea3VecTemp[3][k] - segX;
+                           int yDif = prea3VecTemp[4][k] - segY;
+                           int dif = 0;
+
+                           if (segID == prea3VecTemp[2][k] && plateID < 5)
+                           {
+                              //cout << "TrkID: 1: " << prea3VecTemp[0][k] << ", 2: " << trid << endl;
+                              
+                              preb3Vec[0].push_back(trid);
+                              preb3Vec[1].push_back(plateID);
+                              preb3Vec[2].push_back(segID);
+                              preb3Vec[3].push_back(segX);
+                              preb3Vec[4].push_back(segY);
+                              preb3Vec[5].push_back(segZ);
+
+                              //cout << "PltID: " << plateID << ", SegID: " << segID << ", PDGID: " << pdgID <<  endl;
+                              //cout << "SegX: 1: " << segX << ", 2: " << prea3VecTemp[3][k] << ", SegY: 1: " << segY << ", 2: " << prea3VecTemp[4][k] << ", SegZ: 1: " << segZ << ", 2: " << prea3VecTemp[5][k] << endl;
+                              
+                              dist2Sum += xDif*xDif + yDif*yDif;
+                              
+                              PCnt++;
+                              if (pdgID != 2212){nonPCnt++;}
+                           }
+                        }
+                     }
+                     
+                  }
+               }
+
+               if (plateID > 9 && plateID < 15)
+               {
+                  prea3VecBuf[0].push_back(trid);
+                  prea3VecBuf[1].push_back(plateID);
+                  prea3VecBuf[2].push_back(segID);
+                  prea3VecBuf[3].push_back(segX);
+                  prea3VecBuf[4].push_back(segY);
+                  prea3VecBuf[5].push_back(segZ);
                }
             }
          }
       }
 
-      if (!(jentry%10000))
+      if (!(jentry%100000))
       {
          cout << jentry << "/" << nentries << endl;
+         //cout << "Before Vector Size: " << preb3Vec[0].size() << endl;
       }
    }
    
-   itaf = unique(prea3Vec[0].begin(), prea3Vec[0].end());
-   itbf = unique(preb3Vec[0].begin(), preb3Vec[0].end());
-
-   auto aDist = distance(prea3Vec[0].begin(), itaf);
-   auto bDist = distance(preb3Vec[0].begin(), itbf);
-
-   for (int i = 0; i < 3; i++)
+   if (/*dirIndex != 0*/ true)
    {
-      prea3Vec[i].resize(aDist);
-      preb3Vec[i].resize(bDist);
+      /*
+      for (int x = 0; x < preb3Vec[0].size(); x++)
+      {
+         cout << "TrID: " << prea3VecTemp[0][x] << ", PltID: " << prea3VecTemp[1][x] << ", SegID: " << prea3VecTemp[2][x] << ", SegX: " << prea3VecTemp[3][x] << ", SegY: " << prea3VecTemp[4][x] << ", SegZ: " << prea3VecTemp[5][x] << endl;
+      }
+      */
+      
+      for (int i = 0; i < prea3VecBuf[0].size(); i++)
+      {
+         auto it = find(preb3Vec[0].begin(), preb3Vec[0].end(), prea3VecBuf[0][i]);
+         if (it != preb3Vec[0].end())
+         {
+            int ind = it - preb3Vec[0].begin();
+            if (prea3VecBuf[0][i] == preb3Vec[0][ind])
+            {
+               for (int k = 0; k < arrSize; k++)
+               {
+                  prea3Vec[k].push_back(prea3VecBuf[k][i]);
+
+                  //int xDif = prea3VecBuf[3][i] - preb3Vec[3][ind];
+                  //int yDif = prea3VecBuf[4][i] - preb3Vec[4][ind];
+
+                  //dist2Sum += xDif*xDif + yDif*yDif;
+               }
+               //cout << prea3VecBuf[0][i] << endl;
+            }
+         }
+      }
+
+      /*
+      for (int i = 0; i < prea3VecBuf[0].size(); i++)
+      {
+         for (int j = 0; j < preb3Vec[0].size(); j++)
+         {
+            if (prea3VecBuf[0][i] == preb3Vec[0][j])
+            {
+               for (int k = 0; k < arrSize; k++)
+               {
+                  prea3Vec[k].push_back(prea3VecBuf[k][i]);
+               }
+            }
+         }
+
+         //cout << i << "/" << prea3VecBuf[0].size() << endl;
+      }
+      */
    }
 
-   /*
-   for (int j = 0; j < prea3Vec[0].size(); j++)
+   for (int i = 0; i < arrSize; i++)
    {
-      int cnt = count(prea3Vec[0].begin(), prea3Vec[0].end(), prea3Vec[0][j]);
+      subbVec[i] = preb3Vec[i];
+      subaVec[i] = prea3Vec[i];
 
-      if (cnt != 1)
-         cout << cnt << endl;
+      prea3VecTemp[i].clear();
+      prea3VecBuf[i].clear();
    }
-   */
+
    
-   //prea3Vec[0].resize(distance(prea3Vec[0].begin(),itaf));
-   //preb3Vec[0].resize(distance(preb3Vec[0].begin(),itbf));
-
-   //cout << prea3Vec[0].size() << ", " << prea3Vec[1].size() << endl;
-
-
-   if (!dirIndex%2) { sub1Vec[0] = prea3Vec[0]; sub1Vec[1] = prea3Vec[1]; sub1Vec[2] = prea3Vec[2]; }
-   else { sub2Vec[0] = prea3Vec[0]; sub2Vec[1] = prea3Vec[1]; sub2Vec[2] = prea3Vec[2]; }
-
    cout << "Total Size: " << PCnt << ", Non-Proton Size: " << nonPCnt << endl;
    cout << "No Cut - Total Size: " << totalPCnt << ", Non-Proton Size: " << totalNonPCnt << endl;
-   cout << "Average Distance Squre: " << (float)dist2Sum/PCnt << endl;
-
-   //cout << "After Vector: " << prea3Vec[0].size()<< ", Before Vector: " << preb3Vec[0].size() << endl;
-   //fclose(f);
+   cout << "Average Distance Square: " << (float)dist2Sum/PCnt << endl;
 }
 
-void initVect(int TrID, int SegID, int PdgID, int PltID, int SegX, int SegY, int SegZ)
+void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int PDGID)
 {
-   if(PdgID == 2212 && PltID <= 4)
+   if(PltID < 5)
    {
       //protonsbfW.push_back(trid);
 
@@ -217,8 +351,8 @@ void initVect(int TrID, int SegID, int PdgID, int PltID, int SegX, int SegY, int
 
       //cout << trid << endl;
    }
-
-   if(PdgID == 2212 && PltID >= 5)
+   /*
+   if(PltID > 5 && PltID < 15)
    {
       //protonsafW.push_back(trid);
 
@@ -228,6 +362,21 @@ void initVect(int TrID, int SegID, int PdgID, int PltID, int SegX, int SegY, int
       prea3Vec[3].push_back(SegX);
       prea3Vec[4].push_back(SegY);
       prea3Vec[5].push_back(SegZ);
+
+      //cout << trid << endl;
+   }
+   */
+
+   if(PltID > 9 && PltID < 15)
+   {
+      //protonsafW.push_back(trid);
+
+      prea3VecBuf[0].push_back(TrID);
+      prea3VecBuf[1].push_back(PltID);
+      prea3VecBuf[2].push_back(SegID);
+      prea3VecBuf[3].push_back(SegX);
+      prea3VecBuf[4].push_back(SegY);
+      prea3VecBuf[5].push_back(SegZ);
 
       //cout << trid << endl;
    }

@@ -16,7 +16,7 @@ void ProtonTracking()
 {
     int arrSize = sizeof(subaVec)/sizeof(subaVec[0]);
 
-    for (int sv = 0; sv < 9; sv++)
+    for (int sv = 0; sv < 8; sv++)
     {
         dirIndex = sv;
 
@@ -58,11 +58,11 @@ void ProtonTracking()
         fprintf(outFileA, "Vector Track Size: %8d\n\n", aVecSize);
         fprintf(outFileB, "Vector Track Size: %8d\n\n", bVecSize);
 
-        for (int i = 0; i < bVecSize; i++)
+        for (int i = 0; i < aVecSize; i++)
         {
             fprintf(outFileA, "%8d, %8d, %8d, %8d, %8d, %8d\n", preAVec[0][i], preAVec[1][i], preAVec[2][i], preAVec[3][i], preAVec[4][i], preAVec[5][i]);
         }
-        for (int i = 0; i < aVecSize; i++)
+        for (int i = 0; i < bVecSize; i++)
         {
             fprintf(outFileB, "%8d, %8d, %8d, %8d, %8d, %8d\n", preBVec[0][i], preBVec[1][i], preBVec[2][i], preBVec[3][i], preBVec[4][i], preBVec[5][i]);
         }
