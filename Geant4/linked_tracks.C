@@ -7,15 +7,18 @@
 extern vector<int> subaVec[6];
 extern vector<int> subbVec[6];
 
+extern int PCnt, nonPCnt;
+extern int dist2Sum;
+extern float sigma;
+
 vector<int> prea3Vec[6];
 vector<int> preb3Vec[6];
 vector<int> prea3VecTemp[6];
 vector<int> prea3VecBuf[6];
 
-static int pltSize = 5;
+static int pltSize = 2;
 
-float posAc = 2000;
-float sigma = 0;
+float posAc = 1000;
 
 void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int PDGID);
 
@@ -52,8 +55,7 @@ void linked_tracks::Loop()
 
    vector<int> linkCnt;
 
-   int PCnt = 0, nonPCnt = 0;
-   int totalPCnt = 0, totalNonPCnt = 0;
+   PCnt = 0, nonPCnt = 0;
 
    int arrSize = sizeof(prea3Vec)/sizeof(prea3Vec[0]);
    
@@ -68,8 +70,6 @@ void linked_tracks::Loop()
 
    int vecSize = prea3VecTemp[0].size();
    int pltBegin = dirIndex*10;
-
-   int dist2Sum = 0;
 
    //cout << prea3Vec[0].size() << ", " << prea3Vec[1].size() << endl;
    
@@ -86,6 +86,9 @@ void linked_tracks::Loop()
 
    if (dirIndex == 0)
    {
+      dist2Sum = 0;
+      sigma = 0;
+
       TCanvas *Canvas= new TCanvas("Canvas","Histogram Canvas",20,20,1920,1080);
       TH1F *slopeX = new TH1F("TX","Slope X",400,-0.4,0.4);
       for (Long64_t jentry=0; jentry<nentries;jentry++) 
@@ -108,7 +111,7 @@ void linked_tracks::Loop()
       }
 
       sigma = 3*slopeX->GetStdDev();
-      cout << "Slope X Sigma: " << sigma << endl;
+      //cout << "Slope X Sigma: " << sigma << endl;
 
       slopeX->Draw("HIST");
       Canvas->Print( "Slope.pdf", "pdf");
@@ -156,9 +159,6 @@ void linked_tracks::Loop()
                   
                   if (plateID == currentPlt)
                   {
-                     totalPCnt++;
-                     if (pdgID != 2212) {totalNonPCnt++;}
-
                      int segCnt = linkCnt[currentPlt];
                      for (int k = 0; k < segCnt; k++)
                      {
@@ -188,9 +188,6 @@ void linked_tracks::Loop()
                               if (pdgID != 2212){nonPCnt++;}
                               
                            }
-
-                           totalPCnt++;
-                           if (pdgID != 2212) {totalNonPCnt++;}
                         }
                      }
                      
@@ -343,9 +340,9 @@ void linked_tracks::Loop()
    }
 
    
-   cout << "Total Size: " << PCnt << ", Non-Proton Size: " << nonPCnt << endl;
+   //cout << "Total Size: " << PCnt << ", Non-Proton Size: " << nonPCnt << endl;
    //cout << "No Cut - Total Size: " << totalPCnt << ", Non-Proton Size: " << totalNonPCnt << endl;
-   cout << "Average Distance Square: " << (float)dist2Sum/PCnt << endl;
+   //cout << "Average Distance Square: " << (float)dist2Sum/PCnt << endl;
 }
 
 void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int PDGID)
