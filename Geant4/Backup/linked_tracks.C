@@ -7,6 +7,10 @@
 extern vector<int> subaVec[6];
 extern vector<int> subbVec[6];
 
+extern int PCnt, nonPCnt;
+extern int dist2Sum;
+extern float sigma;
+
 vector<int> prea3Vec[6];
 vector<int> preb3Vec[6];
 vector<int> prea3VecTemp[6];
@@ -14,37 +18,12 @@ vector<int> prea3VecBuf[6];
 
 static int pltSize = 5;
 
-float posAc = 2000;
-float sigma = 0;
+float posAc = 0;
 
-void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int PDGID);
+void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int stpPlt);
 
 void linked_tracks::Loop()
 {
-//   In a ROOT session, you can do:
-//      root> .L linked_tracks.C
-//      root> linked_tracks t
-//      root> t.GetEntry(12); // Fill t data members with entry number 12
-//      root> t.Show();       // Show values of entry 12
-//      root> t.Show(16);     // Read and show values of entry 16
-//      root> t.Loop();       // Loop on all entries
-//
-
-//     This is the loop skeleton where:
-//    jentry is the global entry number in the chain
-//    ientry is the entry number in the current Tree
-//  Note that the argument to GetEntry must be:
-//    jentry for TChain::GetEntry
-//    ientry for TTree::GetEntry and TBranch::GetEntry
-//
-//       To read only selected branches, Insert statements like:
-// METHOD1:
-//    fChain->SetBranchStatus("*",0);  // disable all branches
-//    fChain->SetBranchStatus("branchname",1);  // activate branchname
-// METHOD2: replace line
-//    fChain->GetEntry(jentry);       //read all branches
-//by  b_branchname->GetEntry(ientry); //read only this branch
-
    if (fChain == 0) return;
 
    Long64_t nentries = fChain->GetEntriesFast();
@@ -52,8 +31,7 @@ void linked_tracks::Loop()
 
    vector<int> linkCnt;
 
-   int PCnt = 0, nonPCnt = 0;
-   int totalPCnt = 0, totalNonPCnt = 0;
+   PCnt = 0, nonPCnt = 0;
 
    int arrSize = sizeof(prea3Vec)/sizeof(prea3Vec[0]);
    
@@ -68,8 +46,6 @@ void linked_tracks::Loop()
 
    int vecSize = prea3VecTemp[0].size();
    int pltBegin = dirIndex*10;
-
-   int dist2Sum = 0;
 
    //cout << prea3Vec[0].size() << ", " << prea3Vec[1].size() << endl;
    
@@ -86,6 +62,9 @@ void linked_tracks::Loop()
 
    if (dirIndex == 0)
    {
+      dist2Sum = 0;
+      sigma = 0;
+
       TCanvas *Canvas= new TCanvas("Canvas","Histogram Canvas",20,20,1920,1080);
       TH1F *slopeX = new TH1F("TX","Slope X",400,-0.4,0.4);
       for (Long64_t jentry=0; jentry<nentries;jentry++) 
@@ -108,7 +87,7 @@ void linked_tracks::Loop()
       }
 
       sigma = 3*slopeX->GetStdDev();
-      cout << "Slope X Sigma: " << sigma << endl;
+      //cout << "Slope X Sigma: " << sigma << endl;
 
       slopeX->Draw("HIST");
       Canvas->Print( "Slope.pdf", "pdf");
@@ -141,13 +120,13 @@ void linked_tracks::Loop()
          float segTX = s_eTX[i];
          float segTY = s_eTY[i];
 
-         if ((posAc == 0 || (segX <= posAc && segX >= -posAc && segY <= posAc && segY >= -posAc)) && (segTX < sigma && segTX > -sigma && segTY < sigma && segTY > -sigma))
+         if (s_ePID[0] == 1 && (posAc == 0 || (segX <= posAc && segX >= -posAc && segY <= posAc && segY >= -posAc)) && (segTX < sigma && segTX > -sigma && segTY < sigma && segTY > -sigma))
          {
-            if (dirIndex == 0)
+            if (dirIndex == 0 && i == 0)
             {
-               initVect(trid, plateID, segID, segX, segY, segZ, pdgID);
+               initVect(trid, plateID, segID, segX, segY, segZ, s_ePID[nseg]);
             }
-            else
+            else if (dirIndex <= 7)
             {
                for (int j = 0; j < pltSize; j++)
                {
@@ -156,9 +135,6 @@ void linked_tracks::Loop()
                   
                   if (plateID == currentPlt)
                   {
-                     totalPCnt++;
-                     if (pdgID != 2212) {totalNonPCnt++;}
-
                      int segCnt = linkCnt[currentPlt];
                      for (int k = 0; k < segCnt; k++)
                      {
@@ -186,11 +162,19 @@ void linked_tracks::Loop()
                               
                               PCnt++;
                               if (pdgID != 2212){nonPCnt++;}
-                              
-                           }
 
-                           totalPCnt++;
-                           if (pdgID != 2212) {totalNonPCnt++;}
+                              /*
+                              if (s_ePID[nseg] > 9)
+                              {
+                                 prea3VecBuf[0].push_back(trid);
+                                 prea3VecBuf[1].push_back(plateID);
+                                 prea3VecBuf[2].push_back(segID);
+                                 prea3VecBuf[3].push_back(segX);
+                                 prea3VecBuf[4].push_back(segY);
+                                 prea3VecBuf[5].push_back(segZ);
+                              }
+                              */
+                           }
                         }
                      }
                      
@@ -231,8 +215,8 @@ void linked_tracks::Loop()
                      
                   }
                }
-
-               if (plateID > 9 && plateID <= 9 + pltSize)
+               
+               if ((plateID > 9 && plateID <= 9 + pltSize)  || s_ePID[nseg] > 9)
                {
                   prea3VecBuf[0].push_back(trid);
                   prea3VecBuf[1].push_back(plateID);
@@ -241,13 +225,14 @@ void linked_tracks::Loop()
                   prea3VecBuf[4].push_back(segY);
                   prea3VecBuf[5].push_back(segZ);
                }
+               
             }
          }
       }
 
       if (!(jentry%100000))
       {
-         cout << jentry << "/" << nentries << endl;
+         cout << "Vector Filling Progress: " << jentry << "/" << nentries << endl;
          //cout << "Before Vector Size: " << preb3Vec[0].size() << endl;
       }
    }
@@ -282,6 +267,11 @@ void linked_tracks::Loop()
                }
                //cout << prea3VecBuf[0][i] << endl;
             }
+         }
+
+         if (!(i%100000))
+         {
+            cout << "TrackLinking Progress: " << i << "/" << prea3VecBuf[0].size() << endl;
          }
       }
 
@@ -343,12 +333,12 @@ void linked_tracks::Loop()
    }
 
    
-   cout << "Total Size: " << PCnt << ", Non-Proton Size: " << nonPCnt << endl;
+   //cout << "Total Size: " << PCnt << ", Non-Proton Size: " << nonPCnt << endl;
    //cout << "No Cut - Total Size: " << totalPCnt << ", Non-Proton Size: " << totalNonPCnt << endl;
-   cout << "Average Distance Square: " << (float)dist2Sum/PCnt << endl;
+   //cout << "Average Distance Square: " << (float)dist2Sum/PCnt << endl;
 }
 
-void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int PDGID)
+void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int stpPlt)
 {
    if(PltID < pltSize)
    {
@@ -360,6 +350,18 @@ void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int 
       preb3Vec[3].push_back(SegX);
       preb3Vec[4].push_back(SegY);
       preb3Vec[5].push_back(SegZ);
+
+      /*
+      if(stpPlt > 9)
+      {
+         prea3VecBuf[0].push_back(TrID);
+         prea3VecBuf[1].push_back(PltID);
+         prea3VecBuf[2].push_back(SegID);
+         prea3VecBuf[3].push_back(SegX);
+         prea3VecBuf[4].push_back(SegY);
+         prea3VecBuf[5].push_back(SegZ);
+      }
+      */
 
       //cout << trid << endl;
    }
@@ -379,7 +381,8 @@ void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int 
    }
    */
 
-   if(PltID > 9 && PltID <= 9 + pltSize)
+   
+   if((PltID > 9 && PltID <= 9 + pltSize) || stpPlt > 9)
    {
       //protonsafW.push_back(trid);
 
@@ -392,4 +395,5 @@ void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int 
 
       //cout << trid << endl;
    }
+   
 }

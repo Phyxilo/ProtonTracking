@@ -11,7 +11,7 @@ int PCnt, nonPCnt;
 int dist2Sum;
 
 int aVecSize, bVecSize;
-const int maxLT = 8;
+const int maxLT = 3;
 float sigma;
 
 //TFile *outFile;
@@ -90,14 +90,14 @@ void LogOut()
 void DatOut()
 {
     char outNameA[64], outNameB[64];
-    sprintf(outNameA, "Output/connectedUS_%02d.dat", dirIndex);
-    sprintf(outNameB, "Output/connectedDS_%02d.dat", dirIndex);
+    sprintf(outNameA, "Output/connectedDS_%02d.dat", dirIndex);
+    sprintf(outNameB, "Output/connectedUS_%02d.dat", dirIndex);
 
     FILE *outFileA = fopen(outNameA, "w");
     FILE *outFileB = fopen(outNameB, "w");
 
-    fprintf(outFileA, "Vector Track Size: %8d\n\n", aVecSize);
-    fprintf(outFileB, "Vector Track Size: %8d\n\n", bVecSize);
+    //fprintf(outFileA, "Vector Track Size: %8d\n\n", aVecSize);
+    //fprintf(outFileB, "Vector Track Size: %8d\n\n", bVecSize);
 
     for (int i = 0; i < aVecSize; i++)
     {
