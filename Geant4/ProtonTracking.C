@@ -6,12 +6,14 @@ vector<int> subbVec[6];
 vector<int> preAVec[6];
 vector<int> preBVec[6];
 
-int dirIndex;
+int dirIndex, wIndex;
 int PCnt, nonPCnt;
-int dist2Sum;
+int initSegPlt;
+float dist2Sum; 
 
 int aVecSize, bVecSize;
-const int maxLT = 3;
+int initSegPltMax = 1;
+const int maxLT = 8;
 float sigma;
 
 //TFile *outFile;
@@ -25,59 +27,65 @@ void Draw();
 void ProtonTracking()
 {
     int arrSize = sizeof(subaVec)/sizeof(subaVec[0]);
+    //initSegPlt = 0;
 
-    for (int sv = 0; sv < maxLT; sv++)
+    for(initSegPlt = 0; initSegPlt < initSegPltMax; initSegPlt++)
     {
-        dirIndex = sv;
-
-        linked_tracks t;
-        t.Loop();
-
-        for (int i = 0; i < arrSize; i++)
+        for (dirIndex = 0; dirIndex < maxLT; dirIndex++)
         {
-            preAVec[i].assign(subaVec[i].begin(), subaVec[i].end());
-            preBVec[i].assign(subbVec[i].begin(), subbVec[i].end());
+            for (wIndex = 0; (wIndex < 3 && dirIndex == 7) || (wIndex == 0 && dirIndex < 7); wIndex++)
+            {
+                linked_tracks t;
+                t.Loop();
+
+                for (int i = 0; i < arrSize; i++)
+                {
+                    preAVec[i].assign(subaVec[i].begin(), subaVec[i].end());
+                    preBVec[i].assign(subbVec[i].begin(), subbVec[i].end());
+                }
+
+                vector<int>::iterator itaf = unique(preAVec[0].begin(), preAVec[0].end());
+                vector<int>::iterator itbf = unique(preBVec[0].begin(), preBVec[0].end());
+
+                auto aDist = distance(preAVec[0].begin(), itaf);
+                auto bDist = distance(preBVec[0].begin(), itbf);
+
+                for (int i = 0; i < arrSize; i++)
+                {
+                    preAVec[i].resize(aDist);
+                    preBVec[i].resize(bDist);
+                }
+
+                bVecSize = preBVec[0].size();
+                aVecSize = preAVec[0].size();
+
+                LogOut();
+                DatOut();
+                //RootOut();
+                Draw();
+
+                for (int i = 0; i < arrSize; i++)
+                {
+                    preAVec[i].clear();
+                    preBVec[i].clear();
+                }
+            }
         }
-
-        vector<int>::iterator itaf = unique(preAVec[0].begin(), preAVec[0].end());
-        vector<int>::iterator itbf = unique(preBVec[0].begin(), preBVec[0].end());
-
-        auto aDist = distance(preAVec[0].begin(), itaf);
-        auto bDist = distance(preBVec[0].begin(), itbf);
-
-        for (int i = 0; i < arrSize; i++)
-        {
-            preAVec[i].resize(aDist);
-            preBVec[i].resize(bDist);
-        }
-
-        bVecSize = preBVec[0].size();
-        aVecSize = preAVec[0].size();
-
-        LogOut();
-        DatOut();
-        //RootOut();
-        Draw();
-
-        for (int i = 0; i < arrSize; i++)
-        {
-            preAVec[i].clear();
-            preBVec[i].clear();
-        }
+        //outFile->Close();
+        //delete outFile;
     }
-    //outFile->Close();
-    //delete outFile;
 }
 
 void LogOut()
 {
     if (dirIndex == 0)
     {
+        out << "\n------------------------------- Initial Segment == " << initSegPlt << " -------------------------------"  << endl;
         out << "Slope X Sigma: " << sigma << endl;
         out << "----------------------------------" << endl;
     }
 
-    out << "Tungsten # " << dirIndex << endl;
+    out << "Tungsten # " << dirIndex + wIndex << endl;
     out << "\nTotal Size: " << PCnt << ", Non-Proton Size: " << nonPCnt << endl;
 
     out << "\nSegment Vector Size -- Upstream: " << subbVec[0].size() << ", Downstream: " << subaVec[0].size() << endl;
@@ -89,23 +97,34 @@ void LogOut()
 
 void DatOut()
 {
+    FILE *outFileA;
+    FILE *outFileB;
+
     char outNameA[64], outNameB[64];
     sprintf(outNameA, "Output/connectedDS_%02d.dat", dirIndex);
     sprintf(outNameB, "Output/connectedUS_%02d.dat", dirIndex);
 
-    FILE *outFileA = fopen(outNameA, "w");
-    FILE *outFileB = fopen(outNameB, "w");
+    if (initSegPlt == 0)
+    {
+        outFileA = fopen(outNameA, "w");
+        outFileB = fopen(outNameB, "w");
+    }
+    else 
+    {
+        outFileA = fopen(outNameA, "a+");
+        outFileB = fopen(outNameB, "a+");
+    }
 
     //fprintf(outFileA, "Vector Track Size: %8d\n\n", aVecSize);
     //fprintf(outFileB, "Vector Track Size: %8d\n\n", bVecSize);
 
     for (int i = 0; i < aVecSize; i++)
     {
-        fprintf(outFileA, "%8d, %8d, %8d, %8d, %8d, %8d\n", preAVec[0][i], preAVec[1][i], preAVec[2][i], preAVec[3][i], preAVec[4][i], preAVec[5][i]);
+        fprintf(outFileA, "%8d, %8d, %8d, %8d, %8d, %8d, %8d\n", initSegPlt, preAVec[0][i], preAVec[1][i], preAVec[2][i], preAVec[3][i], preAVec[4][i], preAVec[5][i]);
     }
     for (int i = 0; i < bVecSize; i++)
     {
-        fprintf(outFileB, "%8d, %8d, %8d, %8d, %8d, %8d\n", preBVec[0][i], preBVec[1][i], preBVec[2][i], preBVec[3][i], preBVec[4][i], preBVec[5][i]);
+        fprintf(outFileB, "%8d, %8d, %8d, %8d, %8d, %8d, %8d\n", initSegPlt, preBVec[0][i], preBVec[1][i], preBVec[2][i], preBVec[3][i], preBVec[4][i], preBVec[5][i]);
     }
 
     fclose(outFileA);

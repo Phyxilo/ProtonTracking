@@ -13,9 +13,6 @@
 #include <TFile.h>
 
 #include <iostream>
-#include <filesystem>
-
-namespace fs = std::experimental::filesystem;
 
 // Header file for the classes stored in the TTree if any.
 #include "TClonesArray.h"
@@ -324,9 +321,9 @@ Int_t linked_tracks::Cut(Long64_t entry)
 
 void linked_tracks::SubVol(int SVIndex)
 {
-   char dir [128] = "pl001_";
-   //sprintf(ltDir,"pl0%d1_%02d0/linked_tracks.root", SVIndex, SVIndex+3);
-
+   //char dir [128] = "pl001_";
+   sprintf(ltDir,"../pl0%d1_%02d0/linked_tracks.root", SVIndex, SVIndex+3);
+   /*
    sprintf(dir,"pl0%d1_", SVIndex);
 
    string path = "/Users/emin/Desktop/Workspace/ProtonTracking/Geant4";
@@ -343,5 +340,6 @@ void linked_tracks::SubVol(int SVIndex)
          cout << ltDir << endl;
       }
    }
+   */
 }
 #endif // #ifdef linked_tracks_cxx

@@ -120,18 +120,16 @@ vector<int> ReadFile(char *inFile)
 
    const int numL = numLines;
 
+   int initSegPlt[numLines];
    int trID[numLines];
    int pltID[numLines];
    int segID[numLines];
-   int sxID[numLines];
-   int syID[numLines];
-   int szID[numLines];
 
    fUS = fopen(inFile, "r");
 
    for(int i = 0; i < numLines; i++)
    {
-      fscanf(fUS, "%8d, %8d, %8d, %8d, %8d, %8d", &trID[i], &pltID[i], &segID[i], &sxID[i], &syID[i], &szID[i]);
+      fscanf(fUS, "%8d, %8d, %8d, %8d", &trID[i], &pltID[i], &segID[i], &initSegPlt[i]);
       trIDVec.push_back(trID[i]);
    }
    fclose(fUS);

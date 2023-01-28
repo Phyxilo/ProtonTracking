@@ -11,7 +11,7 @@ int PCnt, nonPCnt;
 int dist2Sum;
 
 int aVecSize, bVecSize;
-const int maxLT = 1;
+const int maxLT = 3;
 float sigma;
 
 ofstream out = ofstream("LinkResults.log", ios::out);
