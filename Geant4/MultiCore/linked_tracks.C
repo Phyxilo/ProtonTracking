@@ -12,6 +12,7 @@ extern int initSegPlt;
 extern float dist2Sum;
 extern float sigma;
 extern int posXMin, posXMax, posYMin, posYMax;
+extern int zn;
 
 vector<int> prea3Vec[6];
 vector<int> preb3Vec[6];
@@ -20,9 +21,7 @@ vector<int> prea3VecBuf[6];
 
 static int pltSize = 5;
 
-//float posAc = 1000;
-
-void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int stpPlt);
+int trIndex = 100000;
 
 void linked_tracks::Loop()
 {
@@ -50,6 +49,11 @@ void linked_tracks::Loop()
 
       prea3Vec[i].clear();
       preb3Vec[i].clear();
+
+      if (wIndex > 0)
+      {
+         preb3Vec[i].assign(subaVec[i].begin(), subaVec[i].end());
+      }
    }
    //cout << prea3VecTemp[0].size() << endl;
 
@@ -126,16 +130,14 @@ void linked_tracks::Loop()
          float segTX = s_eTX[i];
          float segTY = s_eTY[i];
 
-         //if (s_ePID[0] == initSegPlt && (posAc == 0 || (segX <= posAc && segX >= -posAc && segY <= posAc && segY >= -posAc)) && (segTX < sigma && segTX > -sigma && segTY < sigma && segTY > -sigma))
          if (s_ePID[0] == initSegPlt && ((segX <= posXMax && segX >= posXMin && segY <= posYMax && segY >= posYMin)) && (segTX < sigma && segTX > -sigma && segTY < sigma && segTY > -sigma))
          {
-            if ((dirIndex == 0 && i == 0) || wIndex > 0)
+            if ((dirIndex == 0 && i == 0))
             {
-               //initVect(trid, plateID, segID, segX, segY, segZ, s_ePID[nseg]);
-
-               if(plateID >= 10*wIndex && plateID < pltSize + 10*wIndex)
+               if(plateID >= 0 && plateID < pltSize)
                {
-                  
+                  int globaltrkID = (zn+1)*10000000 + (initSegPlt+1)*1000000 + trIndex;
+
                   //protonsbfW.push_back(trid);
 
                   preb3Vec[0].push_back(trid);
@@ -143,7 +145,10 @@ void linked_tracks::Loop()
                   preb3Vec[2].push_back(segID);
                   preb3Vec[3].push_back(segX);
                   preb3Vec[4].push_back(segY);
-                  preb3Vec[5].push_back(segZ);
+                  //preb3Vec[5].push_back(segZ);
+                  preb3Vec[5].push_back(globaltrkID);
+
+                  trIndex++;
                }
 
                /*
@@ -162,7 +167,7 @@ void linked_tracks::Loop()
                }
                */
             }
-            if (dirIndex > 0 && dirIndex <= 7)
+            if (dirIndex > 0 && dirIndex <= 7 && wIndex == 0)
             {
                for (int j = 0; j < pltSize; j++)
                {
@@ -189,7 +194,8 @@ void linked_tracks::Loop()
                               preb3Vec[2].push_back(segID);
                               preb3Vec[3].push_back(segX);
                               preb3Vec[4].push_back(segY);
-                              preb3Vec[5].push_back(segZ);
+                              //preb3Vec[5].push_back(segZ);
+                              preb3Vec[5].push_back(prea3VecTemp[5][indexArr[currentPlt]]);
 
                               float xDif = prea3VecTemp[3][indexArr[currentPlt]] - segX;
                               float yDif = prea3VecTemp[4][indexArr[currentPlt]] - segY;
@@ -239,15 +245,16 @@ void linked_tracks::Loop()
                }
             }
             
-            if ((((plateID > 9 && plateID <= 9 + pltSize)  || s_ePID[nseg] > 9) && ((dirIndex == 0 && s_ePID[0] == 0) || (dirIndex != 0 && s_ePID[0] < 5))) || 
-            (((plateID > 9 + 10*wIndex && plateID <= 9 + 10*wIndex + pltSize)  || s_ePID[nseg] > 9 + 10*wIndex) && s_ePID[0] == initSegPlt))
+            if ((((plateID > 9 && plateID <= 9 + pltSize)  || s_ePID[nseg] > 9) && ((dirIndex == 0 && s_ePID[0] == 0) || (dirIndex != 0 && s_ePID[0] < 5)) && wIndex == 0) || 
+            (((plateID > 9 + 10*wIndex && plateID <= 9 + 10*wIndex + pltSize)  || s_ePID[nseg] > 9 + 10*wIndex) && s_ePID[0] == initSegPlt && wIndex != 0))
             {
                prea3VecBuf[0].push_back(trid);
                prea3VecBuf[1].push_back(plateID);
                prea3VecBuf[2].push_back(segID);
                prea3VecBuf[3].push_back(segX);
                prea3VecBuf[4].push_back(segY);
-               prea3VecBuf[5].push_back(segZ);
+               //prea3VecBuf[5].push_back(segZ);
+               prea3VecBuf[5].push_back(0);
             }
          }
       }
@@ -265,13 +272,25 @@ void linked_tracks::Loop()
       cout << "TrID: " << prea3VecTemp[0][x] << ", PltID: " << prea3VecTemp[1][x] << ", SegID: " << prea3VecTemp[2][x] << ", SegX: " << prea3VecTemp[3][x] << ", SegY: " << prea3VecTemp[4][x] << ", SegZ: " << prea3VecTemp[5][x] << endl;
    }
    */
-
+  
    vector<int> uniqueVec;
+   //vector<int> uniqueTrVec;
+
    uniqueVec.assign(preb3Vec[0].begin(), preb3Vec[0].end());
+   //uniqueTrVec.assign(preb3Vec[5].begin(), preb3Vec[5].end());
 
    vector<int>::iterator it = unique(uniqueVec.begin(), uniqueVec.end());
    auto dist = distance(uniqueVec.begin(), it);
    uniqueVec.resize(dist);
+   //uniqueTrVec.resize(dist);
+
+   vector<pair<int, int>> uniquePair;
+
+   for(int i = 0; i < preb3Vec[0].size(); i++)
+   {
+      uniquePair.push_back(make_pair(preb3Vec[0][i], preb3Vec[5][i]));
+   }
+   uniquePair.erase(unique(uniquePair.begin(), uniquePair.end()), uniquePair.end());
 
    for (int i = 0; i < prea3VecBuf[0].size(); i++)
    {
@@ -279,6 +298,8 @@ void linked_tracks::Loop()
       if (it != uniqueVec.end())
       {
          int ind = it - uniqueVec.begin();
+         prea3VecBuf[5][i] = uniquePair[ind].second;
+
          if (prea3VecBuf[0][i] == uniqueVec[ind])
          {
             for (int k = 0; k < arrSize; k++)
@@ -287,6 +308,7 @@ void linked_tracks::Loop()
             }
             //cout << prea3VecBuf[0][i] << endl;
          }
+         
       }
 
       if (!(i%100000))
@@ -355,51 +377,4 @@ void linked_tracks::Loop()
    //cout << "Total Size: " << PCnt << ", Non-Proton Size: " << nonPCnt << endl;
    //cout << "No Cut - Total Size: " << totalPCnt << ", Non-Proton Size: " << totalNonPCnt << endl;
    //cout << "Average Distance Square: " << (float)dist2Sum/PCnt << endl;
-}
-
-void initVect(int TrID, int PltID, int SegID, int SegX, int SegY, int SegZ, int stpPlt)
-{
-   if(PltID < pltSize)
-   {
-      //protonsbfW.push_back(trid);
-
-      preb3Vec[0].push_back(TrID);
-      preb3Vec[1].push_back(PltID);
-      preb3Vec[2].push_back(SegID);
-      preb3Vec[3].push_back(SegX);
-      preb3Vec[4].push_back(SegY);
-      preb3Vec[5].push_back(SegZ);
-
-   }
-   /*
-   if(PltID > 5 && PltID < 15)
-   {
-      //protonsafW.push_back(trid);
-
-      prea3Vec[0].push_back(TrID);
-      prea3Vec[1].push_back(PltID);
-      prea3Vec[2].push_back(SegID);
-      prea3Vec[3].push_back(SegX);
-      prea3Vec[4].push_back(SegY);
-      prea3Vec[5].push_back(SegZ);
-
-      //cout << trid << endl;
-   }
-   */
-
-   
-   if((PltID > 9 && PltID <= 9 + pltSize) || stpPlt > 9)
-   {
-      //protonsafW.push_back(trid);
-
-      prea3VecBuf[0].push_back(TrID);
-      prea3VecBuf[1].push_back(PltID);
-      prea3VecBuf[2].push_back(SegID);
-      prea3VecBuf[3].push_back(SegX);
-      prea3VecBuf[4].push_back(SegY);
-      prea3VecBuf[5].push_back(SegZ);
-
-      //cout << trid << endl;
-   }
-   
 }

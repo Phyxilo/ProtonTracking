@@ -3,31 +3,38 @@
 vector<int> subaVec[6];
 vector<int> subbVec[6];
 
-vector<int> preAVec[6];
-vector<int> preBVec[6];
+vector<pair<int, int>> aVecPair;
+vector<pair<int, int>> bVecPair;
 
 int dirIndex, wIndex;
 int PCnt, nonPCnt;
 int initSegPlt;
 float dist2Sum; 
+int posXMin, posXMax, posYMin, posYMax;
+int zn;
 
 int aVecSize, bVecSize;
 int initSegPltMax = 1;
-const int maxLT = 8;
 float sigma;
 
 //TFile *outFile;
 ofstream out = ofstream("LinkResults.log", ios::out);
 
 void LogOut();
-void DatOut();
+void DatOut(int zone);
 //void RootOut();
-void Draw();
+void Draw(int maxLT);
 
-void ProtonTracking()
+void ProtonTracking(const int maxLT, int xMin, int xMax, int yMin, int yMax, int zone)
 {
     int arrSize = sizeof(subaVec)/sizeof(subaVec[0]);
+    zn = zone;
     //initSegPlt = 0;
+
+    posXMin = xMin;
+    posXMax = xMax;
+    posYMin = yMin;
+    posYMax = yMax;
 
     for(initSegPlt = 0; initSegPlt < initSegPltMax; initSegPlt++)
     {
@@ -38,37 +45,28 @@ void ProtonTracking()
                 linked_tracks t;
                 t.Loop();
 
-                for (int i = 0; i < arrSize; i++)
+                for (int i = 0; i < subaVec[0].size(); i++)
                 {
-                    preAVec[i].assign(subaVec[i].begin(), subaVec[i].end());
-                    preBVec[i].assign(subbVec[i].begin(), subbVec[i].end());
+                    aVecPair.push_back(make_pair(subaVec[0][i], subaVec[5][i]));
                 }
+                aVecPair.erase(unique(aVecPair.begin(), aVecPair.end()), aVecPair.end());
 
-                vector<int>::iterator itaf = unique(preAVec[0].begin(), preAVec[0].end());
-                vector<int>::iterator itbf = unique(preBVec[0].begin(), preBVec[0].end());
-
-                auto aDist = distance(preAVec[0].begin(), itaf);
-                auto bDist = distance(preBVec[0].begin(), itbf);
-
-                for (int i = 0; i < arrSize; i++)
+                for (int i = 0; i < subbVec[0].size(); i++)
                 {
-                    preAVec[i].resize(aDist);
-                    preBVec[i].resize(bDist);
+                    bVecPair.push_back(make_pair(subbVec[0][i], subbVec[5][i]));
                 }
+                bVecPair.erase(unique(bVecPair.begin(), bVecPair.end()), bVecPair.end());
 
-                bVecSize = preBVec[0].size();
-                aVecSize = preAVec[0].size();
+                aVecSize = aVecPair.size();
+                bVecSize = bVecPair.size();
 
                 LogOut();
-                DatOut();
+                DatOut(zone);
                 //RootOut();
-                Draw();
+                //Draw(maxLT);
 
-                for (int i = 0; i < arrSize; i++)
-                {
-                    preAVec[i].clear();
-                    preBVec[i].clear();
-                }
+                aVecPair.clear();
+                bVecPair.clear();
             }
         }
         //outFile->Close();
@@ -95,14 +93,16 @@ void LogOut()
     out << "--------------------------------------------------------------------" << endl;
 }
 
-void DatOut()
+void DatOut(int zone)
 {
     FILE *outFileA;
     FILE *outFileB;
 
     char outNameA[64], outNameB[64];
-    sprintf(outNameA, "Output/connectedDS_%02d.dat", dirIndex);
-    sprintf(outNameB, "Output/connectedUS_%02d.dat", dirIndex);
+    sprintf(outNameA, "Output/connectedDS_%02d_Z%02d.dat", dirIndex + wIndex, zone);
+    sprintf(outNameB, "Output/connectedUS_%02d_Z%02d.dat", dirIndex + wIndex, zone);
+
+    int globaltrkID = 0;
 
     if (initSegPlt == 0)
     {
@@ -118,17 +118,20 @@ void DatOut()
     //fprintf(outFileA, "Vector Track Size: %8d\n\n", aVecSize);
     //fprintf(outFileB, "Vector Track Size: %8d\n\n", bVecSize);
 
-    for (int i = 0; i < aVecSize; i++)
-    {
-        fprintf(outFileA, "%8d, %8d, %8d, %8d, %8d, %8d, %8d\n", initSegPlt, preAVec[0][i], preAVec[1][i], preAVec[2][i], preAVec[3][i], preAVec[4][i], preAVec[5][i]);
-    }
     for (int i = 0; i < bVecSize; i++)
     {
-        fprintf(outFileB, "%8d, %8d, %8d, %8d, %8d, %8d, %8d\n", initSegPlt, preBVec[0][i], preBVec[1][i], preBVec[2][i], preBVec[3][i], preBVec[4][i], preBVec[5][i]);
+        //fprintf(outFileB, "%8d, %8d, %8d, %8d, %8d, %8d, %8d\n", initSegPlt, preBVec[0][i], preBVec[1][i], preBVec[2][i], preBVec[3][i], preBVec[4][i], preBVec[5][i]);
+        fprintf(outFileB, "%8d, %8d, %8d\n", initSegPlt, bVecPair[i].first, bVecPair[i].second);
+    }
+    for (int i = 0; i < aVecSize; i++)
+    {
+        //fprintf(outFileA, "%8d, %8d, %8d, %8d, %8d, %8d, %8d\n", initSegPlt, preAVec[0][i], preAVec[1][i], preAVec[2][i], preAVec[3][i], preAVec[4][i], preAVec[5][i]);
+        fprintf(outFileA, "%8d, %8d, %8d\n", initSegPlt, aVecPair[i].first, aVecPair[i].second);
     }
 
     fclose(outFileA);
     fclose(outFileB);
+
 }
 
 /*
@@ -183,7 +186,7 @@ TCanvas *Canvas;
 TGraph *IntGraph;
 TGraph *PurGraph;
 
-void Draw()
+void Draw(int maxLT)
 {
     if (dirIndex == 0)
     {

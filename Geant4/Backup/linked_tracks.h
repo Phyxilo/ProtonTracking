@@ -13,15 +13,13 @@
 #include <TFile.h>
 
 #include <iostream>
-#include <filesystem>
-
-namespace fs = std::experimental::filesystem;
 
 // Header file for the classes stored in the TTree if any.
 #include "TClonesArray.h"
 #include "TObject.h"
 
 extern int dirIndex;
+extern int wIndex;
 char ltDir [128] = "pl001_030/linked_tracks.root";
 
 class linked_tracks {
@@ -326,6 +324,7 @@ void linked_tracks::SubVol(int SVIndex)
 {
    //char dir [128] = "pl001_";
    sprintf(ltDir,"pl0%d1_%02d0/linked_tracks.root", SVIndex, SVIndex+3);
+   //sprintf(ltDir,"pl0%d1_%02d0/linked_tracks.root", 7, 10);
    /*
    sprintf(dir,"pl0%d1_", SVIndex);
 

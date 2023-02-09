@@ -76,7 +76,8 @@
         "InteractingTracks.C": "cpp",
         "PLvVert.C": "cpp",
         "IntRatio.C": "cpp",
-        "AnalysisMultLoop.C": "cpp"
+        "AnalysisMultLoop.C": "cpp",
+        "VertexReduction.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.dimInactiveRegions": false

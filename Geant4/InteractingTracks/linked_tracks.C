@@ -66,12 +66,15 @@ void linked_tracks::Loop()
             {
                //fprintf(outFile, "%8d, %8d\n", trid, plateID);
 
+               fprintf(outFile, "%8d\n", trid);
+               /*
                fprintf(outFile, "%8d: ", trid);
                for (int seg = 0; seg < nseg; seg++)
                {
                   fprintf(outFile, "%8d ", s_ePID[seg]);
                }
                fprintf(outFile, "\n");
+               */
 
                cout << "TrackID: " << trid << ", PlateID: " << plateID << endl;
 
